@@ -8,11 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<BloggieDbContext>(options => 
-options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieDbConnectionString")));
+var connectionString = builder.Configuration.GetConnectionString("BloggieDbConnectionString");
+builder.Services.AddDbContext<BloggieDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+var authConnectionString = builder.Configuration.GetConnectionString("BloggieAuthDbConnectionString");
 builder.Services.AddDbContext<AuthDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieAuthDbConnectionString")));
+    options.UseMySql(authConnectionString, ServerVersion.AutoDetect(authConnectionString)));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AuthDbContext>();
